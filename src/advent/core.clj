@@ -14,7 +14,7 @@
                    (let [calibration-sequence (list (coerce-to-int (first line)) (coerce-to-int (last line)))]
                       (Integer/parseInt (apply str calibration-sequence))))
                   (map (fn [line]
-                         (split-numbers line)) input))))
+                         (map last (re-seq #"(?=([0-9]|one|two|three|four|five|six|seven|eight|nine))" line))) input))))
 
 (defn coerce-to-int [input]
   (cond (Character/isDigit (first input)) input
@@ -27,11 +27,3 @@
         (= "seven" input) "7"
         (= "eight" input) "8"
         (= "nine" input) "9"))
-
-(defn split-numbers [input]
-  (let [matcher (re-matcher #"one|two|three|four|five|six|seven|eight|nine|\d" input)]
-    (loop [match (re-find matcher)
-           acc []]
-      (if (nil? match)
-        acc
-        (recur (re-find matcher) (conj acc match))))))

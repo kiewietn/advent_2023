@@ -14,7 +14,7 @@
                    (let [calibration-sequence (list (coerce-to-int (first line)) (coerce-to-int (last line)))]
                       (Integer/parseInt (apply str calibration-sequence))))
                   (map (fn [line]
-                         (map last (re-seq #"(?=([0-9]|one|two|three|four|five|six|seven|eight|nine))" line))) input))))
+                         (map last (re-seq #"(?=(\d|one|two|three|four|five|six|seven|eight|nine))" line))) input))))
 
 (defn coerce-to-int [input]
   (cond (Character/isDigit (first input)) input
@@ -27,3 +27,29 @@
         (= "seven" input) "7"
         (= "eight" input) "8"
         (= "nine" input) "9"))
+
+
+(defn parse-games-input [input]
+  (map (fn [game]
+         (let [rounds (clojure.string/split game #";")]
+           (map (fn [round]
+                  (let [colors (map #(clojure.string/trim %) (clojure.string/split round #","))]
+                    (reduce (fn [acc color]
+                              (let [[count col] (clojure.string/split color #" ")]
+                                (assoc acc col (Integer/parseInt count)))) {} colors))) rounds))) (into [] (map (fn [line]
+                                                                                                                  (last (clojure.string/split line #":"))) input))))
+
+(def capacity-map {"blue" 14 "red" 12 "green" 13})
+
+(defn day2 [input]
+  (reduce +
+          (map #(inc (get % 0))
+               (filter (fn [[idx bool]]
+                         bool) (map-indexed vector (map game-possible? (parse-games-input input)))))))
+
+(defn game-possible? [game]
+  (every? (fn [round]
+            (let [green-valid? (<= (get round "green" 0) (get capacity-map "green"))
+                  red-valid? (<= (get round "red" 0) (get capacity-map "red"))
+                  blue-valid? (<= (get round "blue" 0) (get capacity-map "blue"))]
+              (and green-valid? red-valid? blue-valid?))) game))xo

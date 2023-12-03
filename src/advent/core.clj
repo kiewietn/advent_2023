@@ -52,4 +52,4 @@
             (let [green-valid? (<= (get round "green" 0) (get capacity-map "green"))
                   red-valid? (<= (get round "red" 0) (get capacity-map "red"))
                   blue-valid? (<= (get round "blue" 0) (get capacity-map "blue"))]
-              (and green-valid? red-valid? blue-valid?))) game))xo
+              (and green-valid? red-valid? blue-valid?))) game))

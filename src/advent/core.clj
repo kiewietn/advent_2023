@@ -53,3 +53,17 @@
                   red-valid? (<= (get round "red" 0) (get capacity-map "red"))
                   blue-valid? (<= (get round "blue" 0) (get capacity-map "blue"))]
               (and green-valid? red-valid? blue-valid?))) game))
+
+(defn day4 [input]
+  (let [points-per-game (map #(parse-scratch-card %) input)]
+    (reduce (fn [acc [card score]]
+                       (+ acc score)) 0 points-per-game)))
+
+(defn parse-scratch-card [input]
+  (let [[card nums] (clojure.string/split input #":")
+        [winning_nums your_nums] (map (fn [number]
+                                        (into #{} (filter #(not (clojure.string/blank? %))
+                                                         (clojure.string/split number #" "))))
+                                      (clojure.string/split nums #"\|"))
+        points (Math/floor (Math/pow 2 (dec (count (clojure.set/intersection winning_nums your_nums)))))]
+    [card points]))
